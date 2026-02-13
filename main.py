@@ -55,6 +55,11 @@ def comp(x, n):
     >>> round(comp(-math.pi, 5))
     0
 
+    >>> test_pairs = [(0, 5), (math.pi / 2.5, 5), (-math.pi, 5)]
+    >>> results = [round(comp(x, n)) for x, n in test_pairs]
+    >>> results
+    [0, 1, 0]
+
     >>> all(-1 <= comp(i, 1000000) <= 1 for i in range(1000))
     True
     '''
