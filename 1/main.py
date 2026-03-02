@@ -1,17 +1,10 @@
 # 3 - 2
-# math.sqrt(x + 5) -- math.sin(x)
+# math.exp(x) -- 1 / (x - 7)
 import math
 
 
 def comp(x, n):
     '''
-    Docstring for comp
-    
-    :param x: Description
-    :param n: Description
-
-    >>> comp(4, -10)
-    3.0
 
     >>> comp("2", "3")
     Traceback (most recent call last):
@@ -21,12 +14,12 @@ def comp(x, n):
     >>> comp([2], 3)
     Traceback (most recent call last):
         ...
-    TypeError: '>' not supported between instances of 'list' and 'int'
+    TypeError: '<' not supported between instances of 'list' and 'int'
 
     >>> comp((2, ), 3)
     Traceback (most recent call last):
         ...
-    TypeError: '>' not supported between instances of 'tuple' and 'int'
+    TypeError: '<' not supported between instances of 'tuple' and 'int'
 
     >>> comp(2, dict(3))
     Traceback (most recent call last):
@@ -36,33 +29,34 @@ def comp(x, n):
     >>> comp({2}, 3)
     Traceback (most recent call last):
         ...
-    TypeError: '>' not supported between instances of 'set' and 'int'
+    TypeError: '<' not supported between instances of 'set' and 'int'
 
-    >>> comp(-5, -10)
-    0.0
+    >>> round(comp(4, 5), 1)
+    54.6
 
-    >>> comp(-10, -50)
+    >>> comp(0, 2)
+    1.0
+
+    >>> round(comp(-2, 35), 2)
+    0.14
+
+    >>> round(comp(10, 5), 1)
+    0.3
+
+    >>> round(comp(-7, -10), 2)
+    -0.07
+
+    >>> comp(7, 2)
     Traceback (most recent call last):
         ...
-    ValueError: math domain error
+    ZeroDivisionError: division by zero
 
-    >>> round(comp(0, 5))
-    0
-
-    >>> round(comp(math.pi / 2.5, 5))
-    1
-
-    >>> round(comp(-math.pi, 5))
-    0
-
-    >>> test_pairs = [(0, 5), (math.pi / 2.5, 5), (-math.pi, 5)]
-    >>> results = [round(comp(x, n)) for x, n in test_pairs]
+    >>> test_pairs = [(1, 5), (2, 7), (6, 6), (8, 5), (7, 10)]
+    >>> results = [round(comp(x, n), 2) for x, n in test_pairs]
     >>> results
-    [0, 1, 0]
+    [2.72, 7.39, -1.0, 1.0, 1096.63]
 
-    >>> all(-1 <= comp(i, 1000000) <= 1 for i in range(1000))
-    True
     '''
-    if x > n:
-        return math.sqrt(x + 5)
-    return math.sin(x)
+    if x < n:
+        return math.exp(x)
+    return 1 / (x - 7)
