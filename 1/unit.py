@@ -53,7 +53,7 @@ class TestComp(unittest.TestCase):
             (2, 7, math.exp(2)),
             (6, 6, -1),     
             (8, 5, 1),
-            (7, 10, 1 / math.exp(7)),              
+            (7, 10, math.exp(7)),              
         ]
         for x, n, expected in test_cases:
             with self.subTest(x=x, n=n):

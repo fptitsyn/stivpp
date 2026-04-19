@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Детальное описание товара</h1>
+
+    <h2>{{ kolbasa.brand }} ({{ kolbasa.kind }})</h2>
+    <ul>
+        <li><strong>Бренд:</strong> {{ kolbasa.brand }}</li>
+        <li><strong>Тип:</strong> {{ kolbasa.get_kind_display }}</li>
+        <li><strong>Вес:</strong> {{ kolbasa.weight }} г</li>
+        <li><strong>Нарезка:</strong> {% if kolbasa.precut %}Да{% else %}Нет{% endif %}</li>
+        {% if kolbasa.precut %}
+            <li><strong>Количество кусочков:</strong> {{ kolbasa.num_of_slices }}</li>
+            <li><strong>Вес одного кусочка:</strong> 
+                {% if weight_per_slice %}
+                    {{ weight_per_slice|floatformat:2 }} г
+                {% else %}
+                    Ошибка: {{ error_msg }}
+                {% endif %}
+            </li>
+        {% endif %}
+    </ul>
+
+    <p><a href="{% url 'product_list' %}">← Назад к списку</a></p>
+    <p><a href="{% url 'about' %}">О сервисе</a></p>
+</body>
+</html>

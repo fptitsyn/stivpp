@@ -5,7 +5,6 @@ import math
 
 def comp(x, n):
     '''
-
     >>> comp("2", "3")
     Traceback (most recent call last):
         ...
