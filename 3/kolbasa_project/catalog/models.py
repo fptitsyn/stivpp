@@ -2,26 +2,47 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 
+class Kind(models.Model):
+    """Тип колбасы (варёная, копчёная и т.д.)."""
+    name = models.CharField(
+        max_length=20,
+        unique=True,
+        verbose_name='Название типа'
+    )
+
+    class Meta:
+        verbose_name = 'Тип колбасы'
+        verbose_name_plural = 'Типы колбас'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+class KolbasaManager(models.Manager):
+    def by_type(self, kind_name):
+        """Возвращает колбасы заданного типа (по названию)."""
+        return self.filter(kind__name__iexact=kind_name)
+
+    def heavy(self, min_weight=1000):
+        """Возвращает колбасы тяжелее указанного веса (по умолчанию 1000 г)."""
+        return self.filter(weight__gte=min_weight)
+
 class Kolbasa(models.Model):
-    """Модель колбасы с валидацией и вычисляемым свойством."""
+    """Модель колбасы с расширенными возможностями."""
 
-    # Константы для поля kind
-    KIND_CHOICES = [
-        ('варёная', 'Варёная'),
-        ('копчёная', 'Копчёная'),
-        ('сырокопчёная', 'Сырокопчёная'),
-        ('полукопчёная', 'Полукопчёная'),
-        ('вяленая', 'Вяленая'),
-    ]
-
+    article = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name='Артикул'
+    )
     brand = models.CharField(
         max_length=100,
-        verbose_name='Бренд',
-        help_text='Непустая строка'
+        verbose_name='Бренд'
     )
-    kind = models.CharField(
-        max_length=20,
-        choices=KIND_CHOICES,
+    kind = models.ForeignKey(
+        Kind,
+        on_delete=models.PROTECT,
+        related_name='kolbasas',
         verbose_name='Тип колбасы'
     )
     weight = models.PositiveIntegerField(
@@ -43,55 +64,51 @@ class Kolbasa(models.Model):
         help_text='Только если колбаса нарезана'
     )
 
+    objects = KolbasaManager()
+
     class Meta:
         verbose_name = 'Колбаса'
         verbose_name_plural = 'Колбасы'
+        ordering = ['brand']
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(weight__gte=50) & models.Q(weight__lte=5000),
+                name='weight_between_50_and_5000'
+            )
+        ]
 
     def clean(self):
-        """Пользовательская валидация модели."""
         super().clean()
-
-        # Проверка brand на непустую строку (хотя CharField уже требует строку, но может быть пробелы)
+        # Проверка brand на непустоту
         if not self.brand or not self.brand.strip():
-            raise ValidationError({'brand': 'Бренд не может быть пустым или состоять только из пробелов.'})
-
-        # Приведение kind к нижнему регистру (если вдруг передали с другим регистром)
-        if self.kind:
-            self.kind = self.kind.lower()
-            # Проверка допустимости значения (choices уже ограничивает, но можно и явно)
-            allowed = [choice[0] for choice in self.KIND_CHOICES]
-            if self.kind not in allowed:
-                raise ValidationError({'kind': f'Неверный тип. Допустимые: {", ".join(allowed)}'})
-
-        # Проверка weight диапазона (уже есть валидаторы, но можно дополнить)
-        if self.weight < 50 or self.weight > 5000:
-            raise ValidationError({'weight': 'Вес должен быть от 50 до 5000 грамм.'})
-
-        # Логика поля num_of_slices в зависимости от precut
+            raise ValidationError({'brand': 'Бренд не может быть пустым.'})
+        # Логика поля num_of_slices
         if self.precut:
             if self.num_of_slices is None:
-                raise ValidationError({'num_of_slices': 'Для нарезки обязательно укажите количество кусочков.'})
+                raise ValidationError({'num_of_slices': 'Для нарезки укажите количество кусочков.'})
             if self.num_of_slices <= 0:
                 raise ValidationError({'num_of_slices': 'Количество кусочков должно быть положительным.'})
         else:
-            # Если не нарезка, сбрасываем num_of_slices в None
             if self.num_of_slices is not None:
                 self.num_of_slices = None
 
     def save(self, *args, **kwargs):
-        """Переопределяем save для применения clean() перед сохранением."""
-        self.full_clean()  # вызывает clean() и валидацию полей
+        self.full_clean()
         super().save(*args, **kwargs)
 
     @property
     def weight_per_slice(self) -> float:
-        """Вес одного кусочка, если колбаса нарезана."""
+        """Вес одного кусочка (если нарезана)."""
         if not self.precut:
             raise ValueError("Эта колбаса - не нарезка")
         if self.num_of_slices is None or self.num_of_slices == 0:
             raise ValueError("Некорректное количество кусочков")
         return self.weight / self.num_of_slices
 
+    @property
+    def is_heavy(self) -> bool:
+        """Является ли колбаса тяжёлой (вес > 1000 г)."""
+        return self.weight > 1000
+
     def __str__(self):
-        return f"{self.brand} ({self.kind}) - {self.weight}г"
-    
+        return f"{self.article} - {self.brand} ({self.kind})"

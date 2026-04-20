@@ -1,27 +1,63 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>{{ title }}</h1>
+{% extends 'catalog/base.html' %}
+{% load static %}
 
-    {% if kolbasas %}
-        <ul>
-        {% for k in kolbasas %}
-            <li>
-                <a href="{% url 'product_detail' k.pk %}">
-                    {{ k.brand }} ({{ k.kind }}) — {{ k.weight }} г
-                </a>
-                {% if k.precut %}🍴 нарезка{% endif %}
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>В каталоге пока нет колбас. Добавьте их через <a href="/admin/">админку</a>.</p>
-    {% endif %}
+{% block title %}{{ title }}{% endblock %}
 
-    <p><a href="{% url 'about' %}">О сервисе</a></p>
-</body>
-</html>
+{% block content %}
+<h1 class="mb-4">{{ title }}</h1>
+
+<!-- Форма поиска и фильтрации -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="q" class="form-control" placeholder="Поиск по бренду или типу..." value="{{ search_query }}">
+    </div>
+    <div class="col-md-3">
+        <select name="kind" class="form-select">
+            <option value="">Все типы</option>
+            {% for kind_obj in kinds %}
+                <option value="{{ kind_obj.id }}" {% if selected_kind == kind_obj.id|stringformat:"s" %}selected{% endif %}>{{ kind_obj.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="precut" class="form-select">
+            <option value="">Все</option>
+            <option value="yes" {% if selected_precut == 'yes' %}selected{% endif %}>Нарезка</option>
+            <option value="no" {% if selected_precut == 'no' %}selected{% endif %}>Целая</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">🔍 Найти</button>
+    </div>
+</form>
+
+<!-- Кнопка сброса фильтров -->
+{% if search_query or selected_kind or selected_precut %}
+    <p><a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">Сбросить фильтры</a></p>
+{% endif %}
+
+<!-- Список товаров в виде карточек -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for kolbasa in kolbasas %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ kolbasa.brand }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ kolbasa.kind }}</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Вес:</strong> {{ kolbasa.weight }} г</li>
+                        <li><strong>Нарезка:</strong> {% if kolbasa.precut %}✅ Да ({{ kolbasa.num_of_slices }} кус.){% else %}❌ Нет{% endif %}</li>
+                    </ul>
+                    <a href="{% url 'product_detail' kolbasa.pk %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+                    <a href="{% url 'product_edit' kolbasa.pk %}" class="btn btn-sm btn-outline-secondary">✏️</a>
+                    <a href="{% url 'product_delete' kolbasa.pk %}" class="btn btn-sm btn-outline-danger">🗑️</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col">
+            <div class="alert alert-info">Товары не найдены.</div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
