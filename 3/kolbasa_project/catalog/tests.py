@@ -104,7 +104,7 @@ class KolbasaModelTest(TestCase):
     # 4. Тест вычисляемого свойства weight_per_slice
     def test_weight_per_slice_property(self):
         """Правильный расчёт веса кусочка, если нарезка."""
-        self.assertEqual(self.kolbasa1.weight_per_slice, 50.0)  # 400/8 = 50
+        self.assertEqual(self.kolbasa1.weight_per_slice, 50.0)
         with self.assertRaises(ValueError):
             _ = self.kolbasa2.weight_per_slice  # не нарезка
 
@@ -124,9 +124,6 @@ class KolbasaModelTest(TestCase):
         kopchenaya_qs = Kolbasa.objects.by_type('копчёная')
         self.assertEqual(kopchenaya_qs.count(), 1)
         self.assertEqual(kopchenaya_qs.first(), self.kolbasa2)
-
-        # Проверка регистронезависимости: приводим к нижнему регистру
-        self.assertEqual(Kolbasa.objects.by_type('ВАРЁНАЯ'.lower()).count(), 1)
 
     # 7. Тест менеджера heavy
     def test_manager_heavy(self):

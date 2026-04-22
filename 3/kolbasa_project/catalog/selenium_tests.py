@@ -14,7 +14,6 @@ class SeleniumTests(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         chrome_options = Options()
-        # chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         cls.driver = webdriver.Chrome(options=chrome_options)
@@ -37,12 +36,6 @@ class SeleniumTests(StaticLiveServerTestCase):
             num_of_slices=10
         )
 
-    def _dump_page_source(self):
-        """Выводит полный HTML страницы для отладки."""
-        print("\n=== PAGE SOURCE ===\n")
-        print(self.driver.page_source)
-        print("\n=== END PAGE SOURCE ===\n")
-
     def test_navigation_to_about_page(self):
         """Переход со списка товаров на страницу «О сервисе»."""
         self.driver.get(f'{self.live_server_url}/')
@@ -58,7 +51,6 @@ class SeleniumTests(StaticLiveServerTestCase):
                     EC.element_to_be_clickable((By.PARTIAL_LINK_TEXT, 'сервис'))
                 )
             except TimeoutException:
-                self._dump_page_source()
                 self.fail("Ссылка 'О сервисе' не найдена на главной странице.")
         about_link.click()
         WebDriverWait(self.driver, 10).until(
@@ -82,7 +74,6 @@ class SeleniumTests(StaticLiveServerTestCase):
             )
         except TimeoutException:
             print("Текущий URL:", self.driver.current_url)
-            self._dump_page_source()
             self.fail("Заголовок с названием товара не найден!")
 
         # Элемент с текстом "Вес:"
