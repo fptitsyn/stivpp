@@ -53,6 +53,16 @@ def product_list(request):
     return render(request, 'catalog/product_list.html', context)
 
 
+def kind_groups(request):
+    """Страница с группами товаров по типу (полю «один из»)."""
+    kinds = Kind.objects.prefetch_related('kolbasas').all()
+    context = {
+        'title': 'Группы колбас по типу',
+        'kinds': kinds,
+    }
+    return render(request, 'catalog/kind_groups.html', context)
+
+
 def product_detail(request, pk):
     """Детальная страница товара."""
     kolbasa = get_object_or_404(Kolbasa, pk=pk)

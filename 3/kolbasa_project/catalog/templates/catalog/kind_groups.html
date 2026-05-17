@@ -1,0 +1,27 @@
+{% extends 'catalog/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1 class="mb-4">{{ title }}</h1>
+{% for kind in kinds %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2>{{ kind.name }}</h2>
+            <span class="badge bg-secondary">{{ kind.kolbasas.count }} товаров</span>
+        </div>
+        <div class="card-body">
+            {% if kind.kolbasas.all %}
+                <ul class="list-group list-group-flush">
+                {% for k in kind.kolbasas.all %}
+                    <li class="list-group-item">
+                        <a href="{% url 'product_detail' k.pk %}">{{ k.brand }}</a> — {{ k.weight }} г
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>Нет товаров этого типа</p>
+            {% endif %}
+            <a href="{% url 'product_list' %}?kind={{ kind.pk }}" class="btn btn-sm btn-outline-primary mt-2">Показать только этот тип</a>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}

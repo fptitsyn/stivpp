@@ -46,14 +46,16 @@ TP-KOLBASA-VIEWS-2026
 - Отчёт о запуске: результат `python manage.py test catalog.tests --verbosity=2`
 - Покрытие: `coverage report`
 
-ID	    Сценарий	                            URL	                    Метод	Ожидаемый результат	                                Приоритет
-TC‑01	Главная страница каталога	            /	                    GET	    Status 200, шаблон product_list.html	            High
-TC‑02	Список содержит объекты	                /	                    GET	    Status 200, context['kolbasas'] не пуст	            High
-TC‑03	Фильтрация по типу колбасы	            /?kind=<id>	            GET	    Status 200, в списке только товары выбранного типа   High
-TC‑04	Детальная страница товара	            /product/<pk>/	        GET	    Status 200, context['kolbasa'] существует           High
-TC‑05	Несуществующий товар	                /product/999/	        GET	    Status 404	                                        High
-TC‑06	Страница «О сервисе»	                /about/	                GET	    Status 200, шаблон about.html	                    Medium
-TC‑07	About содержит текст	                /about/	                GET	    assertContains находит фразу «О нашем сервисе»	    Medium
-TC‑08	Пустой список товаров	                /	                    GET	    Status 200, context['kolbasas'] пуст	            Medium
-TC‑09	URL через reverse() (главная)	        reverse('product_list')	–	    Результат совпадает с '/'	                        Low
-TC‑10	Контекст содержит обязательные ключи	/	                    GET	     context включает kolbasas, kinds, current_sort	    Medium
+ID	    Сценарий	                            URL	                    Метод	Ожидаемый результат	                                    Приоритет
+TC‑01	Главная страница каталога	            /	                    GET	    Status 200, шаблон product_list.html	                    High
+TC‑02	Список содержит объекты	                /	                    GET	    Status 200, context['kolbasas'] не пуст	                    High
+TC‑03	Фильтрация по типу колбасы	            /?kind=<id>	            GET	    Status 200, в списке только товары выбранного типа          High
+TC‑04	Детальная страница товара	            /product/<pk>/	        GET	    Status 200, context['kolbasa'] существует                   High
+TC‑05	Несуществующий товар	                /product/999/	        GET	    Status 404	                                                High
+TC‑06	Страница «О сервисе»	                /about/	                GET	    Status 200, шаблон about.html	                            Medium
+TC‑07	About содержит текст	                /about/	                GET	    assertContains находит фразу «О нашем сервисе»	            Medium
+TC‑08	Пустой список товаров	                /	                    GET	    Status 200, context['kolbasas'] пуст	                    Medium
+TC‑09	URL через reverse() (главная)	        reverse('product_list')	–	    Результат совпадает с '/'	                                Low
+TC‑10	Контекст содержит обязательные ключи	/	                    GET	     context включает kolbasas, kinds, current_sort	            Medium
+TC‑11	Страница групп по типу (kind_groups)	/kinds/	                GET	    Status 200, шаблон kind_groups.html, все типы в контексте	High
+TC‑12	Корректное количество товаров в группах	/kinds/	                GET	     Для типа «варёная» 2 товара, «копчёная» — 1	            Medium
