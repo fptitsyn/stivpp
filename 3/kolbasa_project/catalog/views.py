@@ -4,30 +4,39 @@ from django.db.models import Q
 from .models import Kolbasa, Kind
 from .forms import KolbasaForm
 
-def product_list(request):
-    """Список товаров с поиском и фильтрацией."""
-    queryset = Kolbasa.objects.all().order_by('brand')
 
-    # Поиск по бренду или названию типа
+def product_list(request):
+    sort = request.GET.get('sort', 'brand')
+    dir = request.GET.get('dir', 'asc')
+    valid_sort_fields = {
+        'brand': 'brand',
+        'weight': 'weight',
+        'kind': 'kind__name',
+        'num_slices': 'num_of_slices',
+    }
+    order_field = valid_sort_fields.get(sort, 'brand')
+    if dir == 'desc':
+        order_field = f'-{order_field}'
+
+    queryset = Kolbasa.objects.all().order_by(order_field)
+
+    # Поиск и фильтрация (как раньше)
     search_query = request.GET.get('q', '')
     if search_query:
         queryset = queryset.filter(
             Q(brand__icontains=search_query) | Q(kind__name__icontains=search_query)
         )
 
-    # Фильтр по типу колбасы (по ID типа)
     kind_filter = request.GET.get('kind', '')
     if kind_filter:
         queryset = queryset.filter(kind_id=kind_filter)
 
-    # Фильтр по наличию нарезки
     precut_filter = request.GET.get('precut', '')
     if precut_filter == 'yes':
         queryset = queryset.filter(precut=True)
     elif precut_filter == 'no':
         queryset = queryset.filter(precut=False)
 
-    # Получаем все типы колбас для выпадающего списка
     kinds = Kind.objects.all()
 
     context = {
@@ -37,8 +46,12 @@ def product_list(request):
         'kinds': kinds,
         'selected_kind': kind_filter,
         'selected_precut': precut_filter,
+        'current_sort': sort,
     }
+    context['current_sort'] = sort
+    context['current_dir'] = dir
     return render(request, 'catalog/product_list.html', context)
+
 
 def product_detail(request, pk):
     """Детальная страница товара."""

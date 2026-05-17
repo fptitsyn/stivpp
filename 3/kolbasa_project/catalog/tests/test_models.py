@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from .models import Kind, Kolbasa
+from ..models import Kind, Kolbasa
 
 class KolbasaModelTest(TestCase):
 

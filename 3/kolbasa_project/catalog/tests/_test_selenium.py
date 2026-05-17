@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from .models import Kind, Kolbasa
+from ..models import Kind, Kolbasa
 
 class SeleniumTests(StaticLiveServerTestCase):
     """Тесты пользовательского интерфейса с Selenium."""

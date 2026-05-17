@@ -31,6 +31,28 @@
     </div>
 </form>
 
+<div class="btn-group mb-3" role="group">
+    <a href="?sort=brand&dir={% if current_sort == 'brand' and current_dir == 'asc' %}desc{% else %}asc{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_kind %}&kind={{ selected_kind }}{% endif %}{% if selected_precut %}&precut={{ selected_precut }}{% endif %}" 
+       class="btn btn-outline-secondary {% if current_sort == 'brand' %}active{% endif %}">
+       По названию {% if current_sort == 'brand' %}{% if current_dir == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+    </a>
+
+    <a href="?sort=weight&dir={% if current_sort == 'weight' and current_dir == 'asc' %}desc{% else %}asc{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_kind %}&kind={{ selected_kind }}{% endif %}{% if selected_precut %}&precut={{ selected_precut }}{% endif %}" 
+       class="btn btn-outline-secondary {% if current_sort == 'weight' %}active{% endif %}">
+       По весу {% if current_sort == 'weight' %}{% if current_dir == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+    </a>
+
+    <a href="?sort=kind&dir={% if current_sort == 'kind' and current_dir == 'asc' %}desc{% else %}asc{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_kind %}&kind={{ selected_kind }}{% endif %}{% if selected_precut %}&precut={{ selected_precut }}{% endif %}" 
+       class="btn btn-outline-secondary {% if current_sort == 'kind' %}active{% endif %}">
+       По типу {% if current_sort == 'kind' %}{% if current_dir == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+    </a>
+
+    <a href="?sort=num_slices&dir={% if current_sort == 'num_slices' and current_dir == 'asc' %}desc{% else %}asc{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_kind %}&kind={{ selected_kind }}{% endif %}{% if selected_precut %}&precut={{ selected_precut }}{% endif %}" 
+       class="btn btn-outline-secondary {% if current_sort == 'num_slices' %}active{% endif %}">
+       По кусочкам {% if current_sort == 'num_slices' %}{% if current_dir == 'asc' %}▲{% else %}▼{% endif %}{% endif %}
+    </a>
+</div>
+
 <!-- Кнопка сброса фильтров -->
 {% if search_query or selected_kind or selected_precut %}
     <p><a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-sm">Сбросить фильтры</a></p>
