@@ -1,8 +1,6 @@
 from django import forms
 from .models import Kolbasa, Cart, CartItem
 
-from django import forms
-from .models import Kolbasa, Kind
 
 class KolbasaForm(forms.ModelForm):
     class Meta:
@@ -38,13 +36,14 @@ class KolbasaForm(forms.ModelForm):
             'qty_small_opt': 'Кол-во для мелкого опта',
             'qty_large_opt': 'Кол-во для крупного опта',
         }
-    
+
 
 class CartItemForm(forms.ModelForm):
     class Meta:
         model = CartItem
         fields = ['quantity']
         widgets = {'quantity': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'})}
+
 
 class CartDiscountForm(forms.ModelForm):
     class Meta:

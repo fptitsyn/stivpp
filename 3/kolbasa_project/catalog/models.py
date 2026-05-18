@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
+
 class Kind(models.Model):
     """Тип колбасы (варёная, копчёная и т.д.)."""
     name = models.CharField(
@@ -19,6 +20,7 @@ class Kind(models.Model):
     def __str__(self):
         return self.name
 
+
 class KolbasaManager(models.Manager):
     def by_type(self, kind_name):
         """Возвращает колбасы заданного типа (по названию)."""
@@ -27,6 +29,7 @@ class KolbasaManager(models.Manager):
     def heavy(self, min_weight=1000):
         """Возвращает колбасы тяжелее указанного веса (по умолчанию 1000 г)."""
         return self.filter(weight__gte=min_weight)
+
 
 class Kolbasa(models.Model):
     """Модель колбасы с расширенными возможностями."""
@@ -65,9 +68,12 @@ class Kolbasa(models.Model):
         help_text='Только если колбаса нарезана'
     )
 
-    price_unit = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)], verbose_name='Цена за единицу (руб.)')
-    price_small_opt = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0.01)], verbose_name='Цена мелкий опт (руб.)')
-    price_large_opt = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0.01)], verbose_name='Цена крупный опт (руб.)')
+    price_unit = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)],
+                                     verbose_name='Цена за единицу (руб.)')
+    price_small_opt = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,
+                                          validators=[MinValueValidator(0.01)], verbose_name='Цена мелкий опт (руб.)')
+    price_large_opt = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,
+                                          validators=[MinValueValidator(0.01)], verbose_name='Цена крупный опт (руб.)')
     qty_small_opt = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество для мелкого опта')
     qty_large_opt = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество для крупного опта')
 
@@ -78,7 +84,8 @@ class Kolbasa(models.Model):
         verbose_name_plural = 'Колбасы'
         ordering = ['brand']
         constraints = [
-            models.CheckConstraint(check=models.Q(weight__gte=50) & models.Q(weight__lte=5000), name='weight_between_50_and_5000')
+            models.CheckConstraint(check=models.Q(weight__gte=50) & models.Q(weight__lte=5000),
+                                   name='weight_between_50_and_5000')
         ]
 
     def clean(self):
@@ -94,9 +101,11 @@ class Kolbasa(models.Model):
             self.num_of_slices = None
         # Валидация оптовых цен
         if bool(self.price_small_opt) != bool(self.qty_small_opt):
-            raise ValidationError('Укажите одновременно цену и количество для мелкого опта, либо оставьте оба пустыми.')
+            raise ValidationError('Укажите одновременно цену и количество для мелкого опта,'
+                                  ' либо оставьте оба пустыми.')
         if bool(self.price_large_opt) != bool(self.qty_large_opt):
-            raise ValidationError('Укажите одновременно цену и количество для крупного опта, либо оставьте оба пустыми.')
+            raise ValidationError('Укажите одновременно цену и количество для крупного опта,'
+                                  ' либо оставьте оба пустыми.')
         if self.price_small_opt and self.price_large_opt:
             if self.qty_small_opt >= self.qty_large_opt:
                 raise ValidationError('Количество для крупного опта должно быть больше, чем для мелкого.')
@@ -143,6 +152,7 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Корзина {self.id} ({self.user.username}) - {self.status}"
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', verbose_name='Корзина')

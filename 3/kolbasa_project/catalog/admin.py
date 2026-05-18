@@ -1,10 +1,12 @@
 from django.contrib import admin
 from .models import Kind, Kolbasa
 
+
 @admin.register(Kind)
 class KindAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+
 
 @admin.register(Kolbasa)
 class KolbasaAdmin(admin.ModelAdmin):

@@ -177,12 +177,14 @@ def add_to_cart(request, product_pk):
         form = CartItemForm()
     return render(request, 'catalog/add_to_cart.html', {'form': form, 'product': product})
 
+
 @login_required
 @permission_required('catalog.add_cart', raise_exception=True)
 def remove_from_cart(request, item_pk):
     item = get_object_or_404(CartItem, pk=item_pk, cart__user=request.user, cart__status='draft')
     item.delete()
     return redirect('cart_detail')
+
 
 @login_required
 @permission_required('catalog.add_cart', raise_exception=True)
@@ -194,6 +196,7 @@ def submit_cart(request):
         messages.success(request, 'Корзина отправлена.')
         return redirect('cart_list')
     return render(request, 'catalog/confirm_submit.html', {'cart': cart})
+
 
 def cart_list(request):
     if request.user.is_authenticated and request.user.has_perm('catalog.add_cart'):
