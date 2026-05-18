@@ -20,6 +20,19 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if perms.catalog.add_kolbasa %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'product_create' %}">Добавить товар</a></li>
+                        {% endif %}
+                        {% if perms.catalog.add_cart %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'cart_detail' %}">🛒 Корзина</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'cart_list' %}">📋 Мои заказы</a></li>
+                        {% endif %}
+                        <li class="nav-item"><span class="navbar-text">{{ user.username }}</span></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Выйти</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Войти</a></li>
+                        {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'product_list' %}">Каталог</a>
                     </li>

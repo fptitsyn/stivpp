@@ -9,15 +9,15 @@ class ContentTests(TestCase):
         cls.kind_kopch = Kind.objects.create(name='копчёная')
         cls.k1 = Kolbasa.objects.create(
             article='C001', brand='Альфа', kind=cls.kind_varenaya,
-            weight=300, precut=False
+            weight=300, precut=False, price_unit=150.0
         )
         cls.k2 = Kolbasa.objects.create(
             article='C002', brand='Бета', kind=cls.kind_kopch,
-            weight=1200, precut=True, num_of_slices=12
+            weight=1200, precut=True, num_of_slices=12, price_unit=200.0
         )
         cls.k3 = Kolbasa.objects.create(
             article='C003', brand='Гамма', kind=cls.kind_varenaya,
-            weight=150, precut=True, num_of_slices=5
+            weight=150, precut=True, num_of_slices=5, price_unit=100.0
         )
 
     def test_product_list_template(self):
@@ -25,11 +25,17 @@ class ContentTests(TestCase):
         response = self.client.get(url)
         self.assertTemplateUsed(response, 'catalog/product_list.html')
 
+    def test_product_list_contains_objects(self):
+        url = reverse('product_list')
+        response = self.client.get(url)
+        self.assertTrue('kolbasas' in response.context)
+        self.assertEqual(len(response.context['kolbasas']), 3)
+
     def test_product_list_sort_by_brand(self):
         url = reverse('product_list') + '?sort=brand'
         response = self.client.get(url)
         brands = [k.brand for k in response.context['kolbasas']]
-        self.assertEqual(brands, ['Альфа', 'Бета', 'Гамма'])  # алфавитный порядок
+        self.assertEqual(brands, ['Альфа', 'Бета', 'Гамма'])
 
     def test_product_list_sort_by_weight(self):
         url = reverse('product_list') + '?sort=weight'
@@ -41,27 +47,18 @@ class ContentTests(TestCase):
         url = reverse('product_list') + '?sort=kind'
         response = self.client.get(url)
         kinds = [k.kind.name for k in response.context['kolbasas']]
-        # Ожидаем: варёная, варёная, копчёная
         self.assertEqual(kinds, ['варёная', 'варёная', 'копчёная'])
 
     def test_product_list_sort_by_num_slices(self):
         url = reverse('product_list') + '?sort=num_slices'
         response = self.client.get(url)
         slices = [k.num_of_slices for k in response.context['kolbasas']]
-        # None (k1) будет в начале или конце? в SQLite None идёт первым при сортировке ASC
-        self.assertEqual(slices, [None, 5, 12])  # стандартное поведение Django
+        self.assertEqual(slices, [None, 5, 12])
 
-    def test_product_detail_404_if_not_exists(self):
-        url = reverse('product_detail', args=[9999])
+    def test_about_page_contains_text(self):
+        url = reverse('about')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
-
-    # TC-02
-    def test_product_list_contains_objects(self):
-        url = reverse('product_list')
-        response = self.client.get(url)
-        self.assertTrue('kolbasas' in response.context)
-        self.assertEqual(len(response.context['kolbasas']), 3)
+        self.assertContains(response, 'О нашем сервисе')
 
     # TC-03
     def test_product_list_filter_by_kind(self):
@@ -78,10 +75,10 @@ class ContentTests(TestCase):
         self.assertEqual(response.context['kolbasa'], self.k1)
 
     # TC-07
-    def test_about_page_contains_text(self):
-        url = reverse('about')
+    def test_product_detail_404_if_not_exists(self):
+        url = reverse('product_detail', args=[9999])
         response = self.client.get(url)
-        self.assertContains(response, 'О нашем сервисе')
+        self.assertEqual(response.status_code, 404)
 
     # TC-08
     def test_product_list_empty(self):
@@ -97,7 +94,7 @@ class ContentTests(TestCase):
         self.assertIn('kolbasas', response.context)
         self.assertIn('kinds', response.context)
         self.assertIn('current_sort', response.context)
-
+    
     # TC‑11
     def test_kind_groups_page_lists_all_kinds(self):
         url = reverse('kind_groups')

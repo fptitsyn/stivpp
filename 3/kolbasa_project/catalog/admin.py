@@ -8,7 +8,7 @@ class KindAdmin(admin.ModelAdmin):
 
 @admin.register(Kolbasa)
 class KolbasaAdmin(admin.ModelAdmin):
-    list_display = ('article', 'brand', 'kind', 'weight', 'precut', 'num_of_slices', 'is_heavy')
+    list_display = ('article', 'brand', 'kind', 'weight', 'price_unit', 'precut', 'is_heavy')
     list_filter = ('kind', 'precut')
     search_fields = ('article', 'brand')
     readonly_fields = ('is_heavy',)
@@ -18,5 +18,8 @@ class KolbasaAdmin(admin.ModelAdmin):
         }),
         ('Характеристики', {
             'fields': ('weight', 'precut', 'num_of_slices')
+        }),
+        ('Цены', {
+            'fields': ('price_unit', 'price_small_opt', 'qty_small_opt', 'price_large_opt', 'qty_large_opt')
         }),
     )

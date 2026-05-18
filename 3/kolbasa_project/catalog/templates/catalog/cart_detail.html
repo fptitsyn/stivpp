@@ -1,0 +1,22 @@
+{% extends 'catalog/base.html' %}
+{% block content %}
+<h1>Корзина</h1>
+<p>Статус: {{ cart.get_status_display }}</p>
+<form method="post">{% csrf_token %}{{ form.as_p }}<button class="btn btn-primary">Обновить скидку</button></form>
+<table class="table">
+  <thead><tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Сумма</th><th></th></tr></thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item.product.brand }}</td>
+      <td>{{ item.price }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.item_total }}</td>
+      <td><a href="{% url 'remove_from_cart' item.pk %}" class="btn btn-sm btn-danger">Удалить</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p>Общая сумма: {{ cart.total_sum }}</p>
+<a href="{% url 'submit_cart' %}" class="btn btn-warning">Отправить партию</a>
+{% endblock %}

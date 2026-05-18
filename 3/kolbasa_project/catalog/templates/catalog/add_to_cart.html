@@ -1,0 +1,25 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Добавить в корзину{% endblock %}
+
+{% block content %}
+<h1>Добавление товара в корзину</h1>
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">{{ product.brand }} ({{ product.kind.name }})</h5>
+    <p class="card-text">Цена: {{ product.price_unit }} руб.</p>
+  </div>
+</div>
+<form method="post">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="{{ form.quantity.id_for_label }}" class="form-label">Количество</label>
+    {{ form.quantity }}
+    {% if form.quantity.errors %}
+      <div class="text-danger">{{ form.quantity.errors }}</div>
+    {% endif %}
+  </div>
+  <button type="submit" class="btn btn-success">Добавить</button>
+  <a href="{% url 'product_detail' product.pk %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}

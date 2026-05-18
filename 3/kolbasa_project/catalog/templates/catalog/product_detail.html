@@ -4,30 +4,79 @@
 
 {% block content %}
 <div class="card shadow">
-    <div class="card-body">
-        <h1 class="card-title">{{ kolbasa.brand }} ({{ kolbasa.kind }})</h1>
-        <hr>
-        <ul class="list-group list-group-flush mb-3">
-            <li class="list-group-item"><strong>Бренд:</strong> {{ kolbasa.brand }}</li>
-            <li class="list-group-item"><strong>Тип:</strong> {{ kolbasa.kind }}</li>
-            <li class="list-group-item"><strong>Вес:</strong> {{ kolbasa.weight }} г</li>
-            <li class="list-group-item"><strong>Нарезка:</strong> {% if kolbasa.precut %}Да{% else %}Нет{% endif %}</li>
-            {% if kolbasa.precut %}
-                <li class="list-group-item"><strong>Количество кусочков:</strong> {{ kolbasa.num_of_slices }}</li>
-                <li class="list-group-item"><strong>Вес одного кусочка:</strong> 
-                    {% if weight_per_slice %}
-                        {{ weight_per_slice|floatformat:2 }} г
-                    {% else %}
-                        <span class="text-danger">Ошибка: {{ error_msg }}</span>
-                    {% endif %}
-                </li>
-            {% endif %}
-        </ul>
-        <div class="btn-group">
-            <a href="{% url 'product_list' %}" class="btn btn-secondary">← Назад к списку</a>
-            <a href="{% url 'product_edit' kolbasa.pk %}" class="btn btn-warning">✏️ Редактировать</a>
-            <a href="{% url 'product_delete' kolbasa.pk %}" class="btn btn-danger">🗑️ Удалить</a>
-        </div>
+  <div class="card-body">
+    <h1 class="card-title">{{ kolbasa.brand }} ({{ kolbasa.kind.name }})</h1>
+    <hr>
+
+    <!-- Основная информация -->
+    <ul class="list-group list-group-flush mb-3">
+      <li class="list-group-item"><strong>Артикул:</strong> {{ kolbasa.article }}</li>
+      <li class="list-group-item"><strong>Тип:</strong> {{ kolbasa.kind.name }}</li>
+      <li class="list-group-item"><strong>Вес:</strong> {{ kolbasa.weight }} г</li>
+      <li class="list-group-item"><strong>Нарезка:</strong> {% if kolbasa.precut %}Да{% else %}Нет{% endif %}</li>
+      {% if kolbasa.precut %}
+        <li class="list-group-item"><strong>Количество кусочков:</strong> {{ kolbasa.num_of_slices }}</li>
+        <li class="list-group-item"><strong>Вес одного кусочка:</strong> 
+          {% if weight_per_slice %}
+            {{ weight_per_slice|floatformat:2 }} г
+          {% else %}
+            <span class="text-danger">Ошибка: {{ error_msg }}</span>
+          {% endif %}
+        </li>
+      {% endif %}
+    </ul>
+
+    <!-- Цены -->
+    <h5>Цены</h5>
+    <ul class="list-group list-group-flush mb-3">
+      <li class="list-group-item">
+        <strong>Розничная цена:</strong> {{ kolbasa.price_unit }} руб.
+      </li>
+      {% if kolbasa.price_small_opt %}
+        <li class="list-group-item">
+          <strong>Мелкий опт (от {{ kolbasa.qty_small_opt }} шт.):</strong> {{ kolbasa.price_small_opt }} руб./шт.
+        </li>
+      {% endif %}
+      {% if kolbasa.price_large_opt %}
+        <li class="list-group-item">
+          <strong>Крупный опт (от {{ kolbasa.qty_large_opt }} шт.):</strong> {{ kolbasa.price_large_opt }} руб./шт.
+        </li>
+      {% endif %}
+    </ul>
+
+    <!-- Кнопки действий -->
+    <div class="btn-group mb-3">
+      <a href="{% url 'product_list' %}" class="btn btn-secondary">← Назад к списку</a>
+      {% if perms.catalog.change_kolbasa %}
+        <a href="{% url 'product_edit' kolbasa.pk %}" class="btn btn-warning">✏️ Редактировать</a>
+      {% endif %}
+      {% if perms.catalog.delete_kolbasa %}
+        <a href="{% url 'product_delete' kolbasa.pk %}" class="btn btn-danger">🗑️ Удалить</a>
+      {% endif %}
     </div>
+
+    <!-- Добавление в корзину (только для менеджеров) -->
+    {% if user.is_authenticated and perms.catalog.add_cart %}
+      <div class="card bg-light">
+        <div class="card-body">
+          <h5>Добавить в корзину</h5>
+          <form method="post" action="{% url 'add_to_cart' kolbasa.pk %}">
+            {% csrf_token %}
+            <div class="row g-2 align-items-center">
+              <div class="col-auto">
+                <label for="quantity" class="form-label">Количество:</label>
+              </div>
+              <div class="col-auto">
+                <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" style="width: 100px;">
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-success">🛒 В корзину</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Мои заказы{% endblock %}
+
+{% block content %}
+<h1>Мои отправленные партии</h1>
+{% if carts %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Дата</th>
+        <th>Сумма</th>
+        <th>Скидка</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cart in carts %}
+      <tr>
+        <td>{{ cart.id }}</td>
+        <td>{{ cart.updated_at|date:"d.m.Y H:i" }}</td>
+        <td>{{ cart.total_sum|floatformat:2 }} руб.</td>
+        <td>{{ cart.discount_percent }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Нет отправленных партий.</p>
+{% endif %}
+<a href="{% url 'cart_detail' %}" class="btn btn-primary">Вернуться в корзину</a>
+{% endblock %}

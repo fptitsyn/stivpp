@@ -7,7 +7,7 @@ class RouteTests(TestCase):
     def setUpTestData(cls):
         cls.kind = Kind.objects.create(name='варёная')
         cls.kolbasa = Kolbasa.objects.create(
-            article='RT001', brand='Тест', kind=cls.kind, weight=500
+            article='RT001', brand='Тест', kind=cls.kind, weight=500, price_unit=200.0
         )
 
     # TC-01
